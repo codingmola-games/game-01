@@ -14,7 +14,7 @@
 - [x] Cloudflare Pages 배포 성공 (퍼블릭 URL: `game-01-4rf.pages.dev`) + Spend Alert 3단계 ($10/$30/$50)
 - [x] Privacy/Terms 초안 배포 (`/privacy/`, `/terms/` 200 OK)
 - [ ] 도메인 결정 (codingmola.com 서브 / .games / pages.dev)
-- [x] GRAC 사전 상담 (051-720-6800) — "확률/경품 無 시 등급 불필요" 회신. 제3자 경품은 Week 1 재문의
+- [x] GRAC 사전 상담 (051-720-6800) — B2C OK / 매장 경품 이벤트는 관계 법령 정밀 검토 필요 (회색지대). Week 1 내 공정위·변호사 추가 상담
 - [ ] 섭외 매장 Week 2 베타 스케줄 합의
 - [ ] Stripe 계정 개설 (Week 1 D5 = 2026-04-30 전)
 - [ ] Vibe Jam 2026 제출 완료 (2026-04-20, 조기 제출)
