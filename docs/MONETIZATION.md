@@ -31,21 +31,28 @@
 
 **벤치마크:** Marc Lou 뉴스레터 모델 (월 $80K 중 상당 부분이 뉴스레터→제품 funnel)
 
-### 2. 개인 스킨/팁잔 (Stripe)
+### 2. 개인 스킨/팁잔 (Toss + Buy Me a Coffee)
 **시작:** Week 1 D5 (2026-04-30)
 **DAU 게이트:** 없음
 **예상 월매출:** ₩0 ~ 30,000
 
-- 게임 오버 화면에 "커피 한잔 (₩1,500)" Stripe Checkout 버튼
-- DAU 게이트 없음. 1명만 눌러도 $1 매출 = "첫 매출" 콘텐츠 소재
-- 파동 색/사운드 스킨: ₩1,000 IAP (Week 6+, GRAC 자체등급분류 후)
+- ⚠️ **Stripe 한국 미지원 확인** (2026-04-20) → Toss + Buy Me a Coffee 2트랙으로 피벗
+- 국내 유저: **Toss 송금 링크** (`toss.me/codingmola` 형태). 사업자등록 無 OK, 수수료 無
+- 해외 유저 (Vibe Jam 트래픽): **Buy Me a Coffee** 페이지. PayPal 경유 USD 수령
+- 게임 오버 화면에 "☕ 응원하기 (₩3,000)" 버튼 → 브라우저 언어로 링크 분기
+- DAU 게이트 없음. 1명만 눌러도 첫 매출 = 콘텐츠 소재
+- 파동 색/사운드 스킨: ₩1,000 IAP는 Week 6+ 및 경품 법률 자문 이후 재검토
 
-**벤치마크:** Pieter Levels Photo AI ($3M/yr), 팁잔 방식은 ko-fi / buymeacoffee 참고
+**벤치마크:** Pieter Levels Photo AI ($3M/yr), 팁잔은 ko-fi / Buy Me a Coffee 모델 참고
 
-**Stripe 계정 사전 준비:**
-- 개인 계정 개설 (사업자등록 前 가능)
-- 한국 원화 + USD 동시 지원
-- Checkout link만 우선 사용 (SDK 연동은 Week 6+)
+**계정 사전 준비 (Week 1 D5 전):**
+- **Toss**: 앱에서 송금받기 링크 즉시 생성 (5분, 개인 계정 필수)
+- **Buy Me a Coffee**: `buymeacoffee.com` 가입 + PayPal 연결 (한국 개인 PayPal OK)
+- 두 링크만 확보하면 코드 연동은 `index.html` href 한 줄 수정으로 완료
+
+**수수료 현황:**
+- Toss 송금: 0% (개인송금)
+- Buy Me a Coffee: 플랫폼 5% + PayPal 국제 수수료·환전 10~15% → 실수령 약 80%
 
 ### 3. 연습모드 Adsterra 배너
 **시작:** Week 4
@@ -140,7 +147,7 @@
 | 지표 | 출처 | 목표 (Week 6 말) |
 |---|---|---|
 | 채널 월수익 (유튜브 + affiliate) | Google AdSense + 쿠팡 |  ₩30,000+ |
-| 팁잔 누적 | Stripe Dashboard | ₩3,000+ |
+| 팁잔 누적 | Toss + Buy Me a Coffee | ₩3,000+ |
 | 연습모드 광고 CPM | Adsterra | ₩10,000+/월 |
 | 로컬 스폰서 계약 | 매장별 기록 | 1건+ |
 | 기프티콘 거래액 | 카카오 for Biz | 첫 거래 성공 |
