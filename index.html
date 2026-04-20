@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>EDGE OF ZERO · codingmola</title>
+<meta name="description" content="0에 가장 가깝게 멈춰라. 넘으면 끝." />
+<meta property="og:title" content="EDGE OF ZERO" />
+<meta property="og:description" content="두려워도 눌러봐. 0에 가장 가깝게." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="/og?s=default" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="/og?s=default" />
+<style>
+  :root{
+    --bg:#05050a;
+    --ink:#ffffff;
+    --dim:#6a6a88;
+    --warn:#ff4a6a;
+    --ok:#7effc8;
+    --accent:#9aa8ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Inter",sans-serif;
+    overflow:hidden;letter-spacing:.01em}
+  #c{position:fixed;inset:0;width:100vw;height:100vh;display:block;touch-action:none;z-index:0}
+
+  #ui{position:fixed;inset:0;z-index:2;pointer-events:none;display:flex;flex-direction:column;
+    align-items:center;justify-content:center}
+  #ui > *{pointer-events:auto}
+
+  #bigNumber{
+    font:900 clamp(140px,34vw,520px)/1 "SF Mono","JetBrains Mono",ui-monospace,monospace;
+    letter-spacing:-.04em;
+    text-shadow:0 0 60px rgba(154,168,255,.35),0 0 120px rgba(154,168,255,.15);
+    user-select:none;pointer-events:none;
+    font-variant-numeric:tabular-nums;
+    transition:color .12s ease, text-shadow .12s ease;
+  }
+  #bigNumber.slowmo{color:var(--accent);text-shadow:0 0 80px var(--accent),0 0 160px rgba(154,168,255,.4)}
+  #bigNumber.stutter{color:var(--warn);text-shadow:0 0 40px var(--warn)}
+  #bigNumber.pressed{color:var(--ok);text-shadow:0 0 80px var(--ok)}
+  #bigNumber.busted{color:var(--warn);text-shadow:0 0 80px var(--warn)}
+
+  #prompt{
+    position:fixed;bottom:10vh;left:0;right:0;text-align:center;
+    font:600 clamp(14px,2.2vw,20px)/1.3 -apple-system,sans-serif;
+    opacity:.7;letter-spacing:.18em;text-transform:uppercase;
+    pointer-events:none;user-select:none;
+  }
+  #round{
+    position:fixed;top:20px;left:0;right:0;text-align:center;
+    font:700 clamp(11px,1.4vw,14px)/1 -apple-system,sans-serif;
+    opacity:.55;letter-spacing:.32em;text-transform:uppercase;
+    pointer-events:none;user-select:none;
+  }
+  #hud{
+    position:fixed;top:20px;left:20px;font:500 11px/1.5 -apple-system,sans-serif;
+    opacity:.35;user-select:none;pointer-events:none;letter-spacing:.08em;
+  }
+
+  .overlay{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at center,rgba(10,10,20,.88),rgba(5,5,10,.98) 70%);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    z-index:10;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;
+  }
+  .overlay.show{opacity:1;visibility:visible}
+  .card{text-align:center;padding:32px;max-width:560px}
+  .card h1{font:800 clamp(28px,4.5vw,52px)/1.05 -apple-system,sans-serif;margin:0 0 18px;letter-spacing:-.02em}
+  .card h2{font:700 clamp(20px,3vw,34px)/1.1 -apple-system,sans-serif;margin:0 0 14px;letter-spacing:-.01em}
+  .card p{font:400 clamp(14px,1.8vw,18px)/1.6 -apple-system,sans-serif;opacity:.75;margin:0 0 24px}
+  .card small{display:block;margin-top:14px;opacity:.45;font-size:12px;letter-spacing:.08em}
+
+  .btn{
+    font:700 clamp(16px,2.2vw,20px)/1 -apple-system,sans-serif;
+    padding:18px 38px;border-radius:999px;border:1.5px solid rgba(255,255,255,.35);
+    background:transparent;color:#fff;cursor:pointer;letter-spacing:.04em;
+    transition:all .18s ease;
+  }
+  .btn:hover{background:rgba(255,255,255,.08);border-color:#fff;transform:translateY(-1px)}
+  .btn.primary{background:#fff;color:#05050a;border-color:#fff}
+  .btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+
+  .offset{font:800 clamp(36px,7vw,84px)/1 "SF Mono",ui-monospace,monospace;
+    letter-spacing:-.02em;margin:10px 0 18px;font-variant-numeric:tabular-nums}
+  .offset.ok{color:var(--ok)}
+  .offset.bust{color:var(--warn)}
+  .offset.small{font-size:clamp(14px,2vw,18px);opacity:.6;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+
+  .ranks{display:flex;flex-direction:column;gap:8px;margin:20px 0 24px;text-align:left;
+    font:500 14px/1.4 "SF Mono",ui-monospace,monospace;max-height:40vh;overflow:auto}
+  .rank-row{display:flex;justify-content:space-between;padding:10px 16px;border-radius:10px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+  .rank-row.me{background:rgba(154,168,255,.14);border-color:rgba(154,168,255,.35)}
+  .rank-row.bust{opacity:.4}
+  .rank-row .name{opacity:.8}
+  .rank-row .val{font-variant-numeric:tabular-nums;opacity:.9}
+
+  .flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:3;
+    transition:opacity .5s ease}
+  .flash.fire{opacity:.6;transition:opacity 0s}
+
+  @media (max-width:600px){
+    #prompt{bottom:8vh}
+    .card{padding:24px}
+  }
+
+  /* cookie consent banner */
+  #cookieBanner{
+    position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:rgba(8,8,14,.96);border-top:1px solid #2a2a55;
+    padding:14px 18px;display:none;flex-wrap:wrap;gap:10px;
+    align-items:center;justify-content:center;
+    font:500 13px/1.5 -apple-system,"Pretendard",sans-serif;
+    backdrop-filter:blur(8px);
+  }
+  #cookieBanner.show{display:flex}
+  #cookieBanner p{margin:0;max-width:640px;color:#cfcfe3}
+  #cookieBanner a{color:#9aa8ff;text-decoration:underline}
+  #cookieBanner .btn-row{display:flex;gap:8px}
+  #cookieBanner button{
+    border:1px solid #3a3a66;background:#12122a;color:#fff;
+    padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;
+  }
+  #cookieBanner button.primary{background:#9aa8ff;color:#05050a;border-color:#9aa8ff;font-weight:700}
+
+  /* legal footer */
+  #footerLinks{
+    position:fixed;bottom:6px;right:10px;z-index:3;
+    font:500 11px/1 -apple-system,sans-serif;opacity:.45;
+  }
+  #footerLinks a{color:var(--dim);text-decoration:none;margin-left:10px}
+  #footerLinks a:hover{color:var(--ink);opacity:1}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="ui">
+  <div id="bigNumber">10.00</div>
+</div>
+
+<div id="round"></div>
+<div id="prompt"></div>
+<div id="hud">codingmola · edge of zero · v0.1.0</div>
+<div class="flash" id="flash"></div>
+
+<!-- legal footer links -->
+<nav id="footerLinks" aria-label="법적 링크">
+  <a href="/privacy/">개인정보</a>
+  <a href="/terms/">이용약관</a>
+</nav>
+
+<!-- cookie consent banner -->
+<div id="cookieBanner" role="dialog" aria-labelledby="cookieMsg">
+  <p id="cookieMsg">
+    본 사이트는 서비스 제공에 필수적인 쿠키를 사용합니다. 동의 시 분석·광고 쿠키도 활성화됩니다.
+    자세한 내용은 <a href="/privacy/">개인정보 처리방침</a>을 참고하세요.
+  </p>
+  <div class="btn-row">
+    <button id="cookieDecline" type="button">거부</button>
+    <button id="cookieAccept" class="primary" type="button">동의</button>
+  </div>
+</div>
+
+<!-- cookie consent gate — runs before module script, sets window.__consent -->
+<script>
+(function(){
+  var KEY = "cm_consent_v1";
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch(e){}
+  window.__consent = saved === "yes";
+  if(saved === null){
+    var b = document.getElementById("cookieBanner");
+    b.classList.add("show");
+    function decide(v){
+      try { localStorage.setItem(KEY, v); } catch(e){}
+      window.__consent = (v === "yes");
+      b.classList.remove("show");
+      if(v === "yes" && typeof window.__injectAnalytics === "function"){
+        window.__injectAnalytics();
+      }
+    }
+    document.getElementById("cookieAccept").addEventListener("click", function(){ decide("yes"); });
+    document.getElementById("cookieDecline").addEventListener("click", function(){ decide("no"); });
+  } else if(saved === "yes" && typeof window.__injectAnalytics === "function"){
+    window.__injectAnalytics();
+  }
+  // stub — analytics/ads injection defined here; called only after consent=yes
+  window.__injectAnalytics = function(){
+    // Placeholder: Plausible / Cloudflare Analytics / Adsterra scripts go here.
+    // Gated behind consent per KISA online advertising guide + GDPR.
+    // Example (uncomment when ready):
+    // var s = document.createElement("script");
+    // s.defer = true; s.src = "https://plausible.io/js/script.js";
+    // s.setAttribute("data-domain", "codingmola.games");
+    // document.head.appendChild(s);
+  };
+})();
+</script>
+
+<!-- START SCREEN -->
+<div class="overlay show" id="startScreen">
+  <div class="card">
+    <h1>EDGE OF ZERO</h1>
+    <p>0에 가장 가깝게 멈춰라. 넘으면 끝.</p>
+    <button class="btn primary" id="startBtn">두려워도 눌러봐</button>
+    <small>스페이스 · 클릭 · 탭 = Press</small>
+  </div>
+</div>
+
+<!-- TUTORIAL -->
+<div class="overlay" id="tutorialScreen">
+  <div class="card">
+    <h2>튜토리얼</h2>
+    <p>숫자가 <b>10부터 0까지</b> 줄어듭니다.<br/>
+    <b>0에 가장 가까운 순간</b> 딱 한 번만 누르세요.<br/>
+    <b>0을 넘기면 즉시 탈락.</b></p>
+    <button class="btn primary" id="tutBtn">연습 시작</button>
+    <small>이번 라운드는 연습 · 기록에 포함되지 않습니다</small>
+  </div>
+</div>
+
+<!-- ROUND RESULT -->
+<div class="overlay" id="roundScreen">
+  <div class="card">
+    <div class="offset small" id="roundLabel">라운드 결과</div>
+    <div class="offset" id="roundOffset">0.000</div>
+    <div id="roundVerdict" class="offset small"></div>
+    <div class="ranks" id="roundRanks"></div>
+    <button class="btn primary" id="nextBtn">다음 라운드</button>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div class="overlay" id="endScreen">
+  <div class="card">
+    <h2 id="endTitle">생존</h2>
+    <div class="offset small">평균 오차</div>
+    <div class="offset ok" id="endOffset">0.000</div>
+    <div class="ranks" id="endRanks"></div>
+    <p id="endStat">상위 —%</p>
+    <button class="btn primary" id="againBtn">다시</button>
+    <button class="btn" id="shareBtn">공유</button>
+    <small id="endSeed">seed: —</small>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from "three";
+
+// ---------- three.js scene ----------
+const canvas = document.getElementById("c");
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight, true);
+renderer.setClearColor(0x05050a, 1);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x05050a, 30, 180);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 500);
+camera.position.set(0, 8, 22);
+camera.lookAt(0, 3, 0);
+
+scene.add(new THREE.HemisphereLight(0x6a78ff, 0x05050a, 0.55));
+const dir = new THREE.DirectionalLight(0xffffff, 0.4);
+dir.position.set(6, 12, 8);
+scene.add(dir);
+
+// sinking grid floor
+const grid = new THREE.GridHelper(400, 80, 0x2a2a55, 0x14142a);
+grid.position.y = -2;
+scene.add(grid);
+
+// outer perimeter ring (atmosphere)
+const ring = new THREE.Mesh(
+  new THREE.RingGeometry(60, 62, 128),
+  new THREE.MeshBasicMaterial({color:0x9aa8ff, transparent:true, opacity:0.15, side:THREE.DoubleSide})
+);
+ring.rotation.x = -Math.PI/2;
+ring.position.y = -1.99;
+scene.add(ring);
+
+// central pedestal glow
+const pedestalMat = new THREE.MeshBasicMaterial({color:0x9aa8ff, transparent:true, opacity:0.08, side:THREE.DoubleSide});
+const pedestal = new THREE.Mesh(new THREE.CircleGeometry(8, 64), pedestalMat);
+pedestal.rotation.x = -Math.PI/2;
+pedestal.position.y = -1.98;
+scene.add(pedestal);
+
+// wave ripple pool
+const waves = [];
+function spawnWave(color=0x9aa8ff, radius=0, life=1.5){
+  const m = new THREE.Mesh(
+    new THREE.RingGeometry(0.6, 0.9, 64),
+    new THREE.MeshBasicMaterial({color, transparent:true, opacity:0.9, side:THREE.DoubleSide})
+  );
+  m.rotation.x = -Math.PI/2;
+  m.position.y = -1.95;
+  m.userData = {life, t:0, startR: radius};
+  scene.add(m);
+  waves.push(m);
+}
+function updateWaves(dt){
+  for(let i=waves.length-1;i>=0;i--){
+    const w = waves[i];
+    w.userData.t += dt;
+    const p = w.userData.t / w.userData.life;
+    if(p >= 1){ scene.remove(w); w.geometry.dispose(); w.material.dispose(); waves.splice(i,1); continue; }
+    const s = 1 + p * 60;
+    w.scale.set(s,s,s);
+    w.material.opacity = (1 - p) * 0.8;
+  }
+}
+
+// floating ambient particles
+const starGeo = new THREE.BufferGeometry();
+const starCount = 400;
+const starPos = new Float32Array(starCount*3);
+for(let i=0;i<starCount;i++){
+  starPos[i*3+0] = (Math.random()-.5)*200;
+  starPos[i*3+1] = Math.random()*60 - 5;
+  starPos[i*3+2] = (Math.random()-.5)*200;
+}
+starGeo.setAttribute("position", new THREE.BufferAttribute(starPos,3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({color:0x9aa8ff, size:0.15, transparent:true, opacity:0.45}));
+scene.add(stars);
+
+addEventListener("resize", () => {
+  renderer.setSize(innerWidth, innerHeight, true);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+// ---------- audio (WebAudio, no assets) ----------
+let ac = null;
+function audio(){ if(!ac) ac = new (window.AudioContext||window.webkitAudioContext)(); return ac; }
+function tone(freq, dur=0.08, type="sine", gain=0.18){
+  const a = audio();
+  const o = a.createOscillator();
+  const g = a.createGain();
+  o.type = type;
+  o.frequency.value = freq;
+  g.gain.setValueAtTime(gain, a.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+  o.connect(g); g.connect(a.destination);
+  o.start();
+  o.stop(a.currentTime + dur);
+}
+const sfx = {
+  tick:   () => tone(880, 0.04, "square", 0.04),
+  press:  () => { tone(1200, 0.08, "triangle", 0.22); tone(600, 0.18, "sine", 0.12); },
+  bust:   () => { tone(120, 0.32, "sawtooth", 0.28); tone(80, 0.5, "sine", 0.18); },
+  win:    () => { tone(880, 0.08); tone(1320, 0.1); tone(1760, 0.14); },
+  stutter:() => tone(200, 0.05, "square", 0.08),
+};
+
+// ---------- game state ----------
+const STATE = { MENU:"menu", TUTORIAL:"tutorial", COUNTDOWN:"countdown", ROUND_END:"round_end", GAME_OVER:"game_over" };
+const CFG = {
+  totalRounds: 5,
+  baseDuration: 10.0,
+  speedPerRound: 0.10,    // +10% per round
+  slowmoThreshold: 0.35,  // when number <= this, slowmo engages
+  slowmoFactor: 0.25,     // time scales to 25%
+  stutterCountMin: 2,
+  stutterCountMax: 4,
+  stutterDur: [0.15, 0.45],
+  bustLimit: -1.2,        // auto-bust if user never presses
+  botCount: 7,
+};
+
+let state = STATE.MENU;
+let round = 0;             // 0 = tutorial, 1..5 = real rounds
+let seed = randomSeed();
+let rng = mulberry32(seed);
+let roundStart = 0;        // wall-time ms
+let roundPaused = 0;       // accumulated paused ms
+let currentStutter = null; // {start,end}
+let stutters = [];         // upcoming [{at, dur}]
+let slowmoEngaged = false;
+let pressed = false;
+let pressOffset = 0;       // player offset (value at press)
+let playerResults = [];    // {round, offset, busted, tutorial}
+let botState = [];         // [{name, offset, busted, pressed}]
+let countdownValue = CFG.baseDuration;
+let lastTickSec = 99;
+
+// ---------- DOM ----------
+const $big = document.getElementById("bigNumber");
+const $prompt = document.getElementById("prompt");
+const $round = document.getElementById("round");
+const $flash = document.getElementById("flash");
+
+const screens = {
+  start:    document.getElementById("startScreen"),
+  tutorial: document.getElementById("tutorialScreen"),
+  round:    document.getElementById("roundScreen"),
+  end:      document.getElementById("endScreen"),
+};
+function showScreen(name){
+  for(const k in screens) screens[k].classList.toggle("show", k===name);
+}
+
+document.getElementById("startBtn").onclick = () => { audio().resume?.(); startTutorial(); };
+document.getElementById("tutBtn").onclick   = () => { beginRound(0); };
+document.getElementById("nextBtn").onclick  = () => { advanceRound(); };
+document.getElementById("againBtn").onclick = () => { resetAll(); startTutorial(); };
+document.getElementById("shareBtn").onclick = () => shareResult();
+
+// input
+function tryPress(){
+  if(state !== STATE.COUNTDOWN || pressed) return;
+  pressed = true;
+  const v = countdownValue;
+  pressOffset = v;
+  spawnWave(0xffffff, 0, 1.2);
+  if(v < 0){
+    $big.classList.remove("slowmo");
+    $big.classList.add("busted");
+    sfx.bust();
+    flash("#ff4a6a");
+  } else {
+    $big.classList.remove("slowmo");
+    $big.classList.add("pressed");
+    sfx.press();
+  }
+}
+addEventListener("keydown", e => {
+  if(e.code === "Space" || e.code === "Enter"){ e.preventDefault(); tryPress(); }
+});
+canvas.addEventListener("pointerdown", e => { tryPress(); });
+
+function flash(color="#ffffff"){
+  $flash.style.background = color;
+  $flash.classList.add("fire");
+  setTimeout(()=>$flash.classList.remove("fire"), 40);
+}
+
+// ---------- round flow ----------
+function startTutorial(){
+  resetAll();
+  state = STATE.TUTORIAL;
+  showScreen("tutorial");
+  $round.textContent = "TUTORIAL";
+  $prompt.textContent = "";
+}
+
+function beginRound(n){
+  round = n;
+  showScreen(null);
+  state = STATE.COUNTDOWN;
+  pressed = false;
+  pressOffset = 0;
+  slowmoEngaged = false;
+  currentStutter = null;
+  roundPaused = 0;
+  lastTickSec = 99;
+
+  const dur = roundDuration(n);
+  // plan stutters (fewer in tutorial)
+  stutters = planStutters(n, dur);
+
+  // plan bot timings
+  botState = makeBots(n);
+
+  roundStart = performance.now();
+  $big.classList.remove("slowmo","pressed","busted","stutter");
+  $round.textContent = n === 0 ? "TUTORIAL · R0" : `ROUND ${n} / ${CFG.totalRounds}`;
+  $prompt.textContent = "0에 가장 가깝게 · Press";
+}
+
+function roundDuration(n){
+  // real-time wall clock duration for 10 → 0
+  if(n === 0) return CFG.baseDuration;
+  const mult = 1 + CFG.speedPerRound * (n-1);
+  return CFG.baseDuration / mult;
+}
+
+function planStutters(n, dur){
+  const count = n === 0 ? 1 : (CFG.stutterCountMin + Math.floor(rng()*(CFG.stutterCountMax-CFG.stutterCountMin+1)));
+  const out = [];
+  for(let i=0;i<count;i++){
+    const at = rng() * (dur*0.7) + dur*0.15;  // avoid edges
+    const d  = CFG.stutterDur[0] + rng()*(CFG.stutterDur[1]-CFG.stutterDur[0]);
+    out.push({at:at*1000, dur:d*1000, fired:false});
+  }
+  return out.sort((a,b)=>a.at-b.at);
+}
+
+function makeBots(n){
+  if(n === 0) return [];
+  // each bot has a target offset (positive, smaller = better)
+  // bust rate increases with round to simulate pressure
+  const arr = [];
+  const bustRate = 0.10 + n*0.04;
+  for(let i=0;i<CFG.botCount;i++){
+    const willBust = rng() < bustRate;
+    const target = willBust ? -(rng()*0.8 + 0.05) : (Math.pow(rng(), 1.6) * 1.8 + 0.02);
+    arr.push({name:`player_${(Math.floor(rng()*9000)+1000)}`, target, busted:willBust, pressed:false, offset:null});
+  }
+  return arr;
+}
+
+// main loop
+const clock = new THREE.Clock();
+function loop(){
+  const dt = clock.getDelta();
+  renderer.render(scene, camera);
+  updateWaves(dt);
+  stars.rotation.y += dt * 0.02;
+  grid.position.y = -2 + Math.sin(performance.now()*0.0008)*0.1;
+
+  if(state === STATE.COUNTDOWN){
+    tickCountdown();
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+function tickCountdown(){
+  const now = performance.now();
+
+  // handle active stutter
+  if(currentStutter){
+    if(now >= currentStutter.end){
+      roundPaused += currentStutter.end - currentStutter.start;
+      currentStutter = null;
+      $big.classList.remove("stutter");
+    }
+  } else {
+    // maybe fire next stutter (only before we are in slowmo window)
+    const elapsedUnpaused = now - roundStart - roundPaused;
+    for(const s of stutters){
+      if(!s.fired && elapsedUnpaused >= s.at && countdownValue > CFG.slowmoThreshold){
+        s.fired = true;
+        currentStutter = {start:now, end:now + s.dur};
+        $big.classList.add("stutter");
+        sfx.stutter();
+        break;
+      }
+    }
+  }
+
+  // compute countdown value
+  const dur = roundDuration(round);
+  const elapsedUnpaused = (currentStutter ? currentStutter.start : now) - roundStart - roundPaused;
+  const baseValue = CFG.baseDuration - (elapsedUnpaused/1000) * (CFG.baseDuration/dur);
+
+  // slowmo: once value drops below threshold, stretch time
+  let displayValue = baseValue;
+  if(baseValue <= CFG.slowmoThreshold && !pressed){
+    if(!slowmoEngaged){
+      slowmoEngaged = true;
+      $big.classList.add("slowmo");
+      // freeze the pause accumulator at the moment of engagement
+      window._slowmoAnchor = { time: now, value: baseValue };
+    }
+    const anchor = window._slowmoAnchor;
+    const extraMs = now - anchor.time;
+    displayValue = anchor.value - (extraMs/1000) * (CFG.baseDuration/dur) * CFG.slowmoFactor;
+  }
+
+  countdownValue = displayValue;
+  $big.textContent = formatNum(displayValue);
+
+  // audio tick on whole seconds down
+  const sec = Math.ceil(displayValue);
+  if(sec !== lastTickSec && displayValue > 0.1){ sfx.tick(); lastTickSec = sec; }
+
+  // auto-bust if too late
+  if(!pressed && displayValue <= CFG.bustLimit){
+    pressed = true;
+    pressOffset = displayValue;
+    $big.classList.add("busted");
+    sfx.bust();
+    flash("#ff4a6a");
+  }
+
+  // resolve round: brief delay after press
+  if(pressed){
+    if(!window._resolveAt) window._resolveAt = now + 900;
+    if(now >= window._resolveAt){
+      window._resolveAt = null;
+      window._slowmoAnchor = null;
+      endRound();
+    }
+  }
+}
+
+function formatNum(v){
+  if(v >= 0) return v.toFixed(2);
+  return v.toFixed(2); // negatives show as -0.XX
+}
+
+function endRound(){
+  state = STATE.ROUND_END;
+  $prompt.textContent = "";
+  // resolve bots
+  for(const b of botState){
+    b.pressed = true;
+    b.offset = b.target;
+  }
+  const myBust = pressOffset < 0;
+  playerResults.push({round, offset:pressOffset, busted:myBust, tutorial: round===0});
+
+  if(round === 0){
+    // tutorial
+    showTutorialResult();
+    return;
+  }
+
+  showRoundResult();
+
+  // if busted: game over after result
+}
+
+function showTutorialResult(){
+  const myBust = pressOffset < 0;
+  const $off = document.getElementById("roundOffset");
+  const $verdict = document.getElementById("roundVerdict");
+  const $label = document.getElementById("roundLabel");
+  const $ranks = document.getElementById("roundRanks");
+  $label.textContent = "튜토리얼 결과";
+  if(myBust){
+    $off.textContent = pressOffset.toFixed(3);
+    $off.className = "offset bust";
+    $verdict.textContent = "너무 늦었어요 · 0을 넘겼습니다";
+  } else {
+    $off.textContent = `${pressOffset.toFixed(3)} 차이`;
+    $off.className = "offset ok";
+    $verdict.textContent = pressOffset > 1.5 ? "너무 일찍" : (pressOffset < 0.1 ? "완벽" : "괜찮아요");
+  }
+  $ranks.innerHTML = "";
+  document.getElementById("nextBtn").textContent = "본게임 시작";
+  showScreen("round");
+}
+
+function showRoundResult(){
+  const me = {name:"YOU", offset:pressOffset, busted: pressOffset < 0, me:true};
+  const all = [me, ...botState.map(b=>({name:b.name, offset:b.offset, busted:b.busted}))];
+  // rank: non-busted first, sorted asc by offset; busted last
+  const alive = all.filter(x=>!x.busted).sort((a,b)=>a.offset-b.offset);
+  const dead  = all.filter(x=>x.busted);
+  const ranked = [...alive, ...dead];
+
+  const $off = document.getElementById("roundOffset");
+  const $verdict = document.getElementById("roundVerdict");
+  const $label = document.getElementById("roundLabel");
+  const $ranks = document.getElementById("roundRanks");
+  $label.textContent = `라운드 ${round} 결과`;
+
+  if(me.busted){
+    $off.textContent = pressOffset.toFixed(3);
+    $off.className = "offset bust";
+    $verdict.textContent = "BUSTED · 0을 넘겼습니다";
+    document.getElementById("nextBtn").textContent = "기록 보기";
+  } else {
+    $off.textContent = `${pressOffset.toFixed(3)} 차이`;
+    $off.className = "offset ok";
+    const myRank = ranked.findIndex(x=>x.me) + 1;
+    $verdict.textContent = `${myRank}위 / ${ranked.length}명`;
+    document.getElementById("nextBtn").textContent = round >= CFG.totalRounds ? "최종 결과" : "다음 라운드";
+  }
+
+  $ranks.innerHTML = ranked.slice(0,8).map((r,i)=>{
+    const cls = (r.me?"me ":"") + (r.busted?"bust":"");
+    const val = r.busted ? "BUST" : `${r.offset.toFixed(3)}`;
+    return `<div class="rank-row ${cls}"><span class="name">${i+1}. ${r.name}</span><span class="val">${val}</span></div>`;
+  }).join("");
+
+  showScreen("round");
+}
+
+function advanceRound(){
+  const last = playerResults[playerResults.length-1];
+  if(last && last.tutorial){
+    beginRound(1);
+    return;
+  }
+  if(last && last.busted){
+    finishGame();
+    return;
+  }
+  if(round >= CFG.totalRounds){
+    finishGame();
+    return;
+  }
+  beginRound(round + 1);
+}
+
+function finishGame(){
+  state = STATE.GAME_OVER;
+  const real = playerResults.filter(r=>!r.tutorial);
+  const busted = real.some(r=>r.busted);
+  const goodResults = real.filter(r=>!r.busted);
+  const avg = goodResults.length ? goodResults.reduce((a,b)=>a+b.offset,0)/goodResults.length : null;
+
+  document.getElementById("endTitle").textContent = busted ? "탈락" : "생존";
+  document.getElementById("endOffset").textContent = avg===null ? "—" : avg.toFixed(3);
+  document.getElementById("endOffset").className = "offset " + (busted ? "bust" : "ok");
+
+  // simulated percentile (placeholder — real leaderboard comes Week 3)
+  const pct = avg===null ? "—" : percentileFromAvg(avg);
+  document.getElementById("endStat").textContent = avg===null ? "라운드 미완주" : `상위 ${pct}%`;
+
+  document.getElementById("endSeed").textContent = `seed: ${seed}  ·  ${goodResults.length}/${CFG.totalRounds} 라운드 생존`;
+
+  const $ranks = document.getElementById("endRanks");
+  $ranks.innerHTML = real.map(r=>{
+    const cls = r.busted ? "bust" : "";
+    const val = r.busted ? `BUST (${r.offset.toFixed(3)})` : `${r.offset.toFixed(3)}`;
+    return `<div class="rank-row ${cls}"><span class="name">R${r.round}</span><span class="val">${val}</span></div>`;
+  }).join("");
+
+  showScreen("end");
+}
+
+function percentileFromAvg(avg){
+  // rough curve — sub-0.05 = elite. updates when real data arrives.
+  if(avg < 0.05) return "1";
+  if(avg < 0.10) return "3";
+  if(avg < 0.20) return "10";
+  if(avg < 0.40) return "25";
+  if(avg < 0.80) return "50";
+  return "75";
+}
+
+function shareResult(){
+  const real = playerResults.filter(r=>!r.tutorial);
+  const good = real.filter(r=>!r.busted);
+  const avg = good.length ? (good.reduce((a,b)=>a+b.offset,0)/good.length).toFixed(3) : "DNF";
+  const qs = new URLSearchParams({ s: String(seed) });
+  if(avg !== "DNF") qs.set("t", avg);
+  const url = `${location.origin}${location.pathname}?${qs.toString()}`;
+  const text = `EDGE OF ZERO · 평균 오차 ${avg}  ${url}`;
+  if(navigator.share){
+    navigator.share({title:"EDGE OF ZERO", text, url}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text);
+    const btn = document.getElementById("shareBtn");
+    const old = btn.textContent;
+    btn.textContent = "복사됨";
+    setTimeout(()=>btn.textContent=old, 1400);
+  }
+}
+
+function resetAll(){
+  state = STATE.MENU;
+  round = 0;
+  seed = urlSeed() ?? randomSeed();
+  rng = mulberry32(seed);
+  playerResults = [];
+  botState = [];
+}
+
+// ---------- utils ----------
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function randomSeed(){ return Math.floor(Math.random()*0xffffffff); }
+function urlSeed(){
+  const m = new URLSearchParams(location.search).get("s");
+  const n = m ? parseInt(m,10) : NaN;
+  return Number.isFinite(n) ? n : null;
+}
+
+// initial seed from URL if present
+resetAll();
+</script>
+
+<!-- Vibe Jam 2026 mandatory widget (required for submission) -->
+<script async src="https://vibej.am/2026/widget.js"></script>
+</body>
+</html>
