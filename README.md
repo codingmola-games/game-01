@@ -25,7 +25,7 @@
 - Three.js 자체 호스팅 (`/vendor/three.module.js`) — CDN 의존 금지
 - 브라우저 즉시 실행, 로그인/설치/결제벽 없음
 - 멀티플레이 우선 (바이럴 계수 ↑)
-- 제품명/개인 실명 노출 금지 — GitHub org = `codingmola` (개인 `HanjuJo` 불가)
+- 제품명/개인 실명 노출 금지 — GitHub org = `codingmola-games` (개인 `HanjuJo` 불가, `codingmola`는 선점됨)
 - 작업은 **개인 장비 · 개인 네트워크**에서만 (회사 장비/계정/시간 사용 금지)
 - 에셋은 `assets/LICENSES.md`에 등록된 CC0/생성본만 — 등록 없이 커밋 금지
 - **시간 예산: 게임 개발 4h/주 + 콘텐츠 제작 2h/주 = 총 6h/주 상한**

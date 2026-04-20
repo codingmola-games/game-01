@@ -10,7 +10,7 @@
 - [ ] advisor 에이전트 정의 파일 작동 확인 (화요일 21:00 첫 호출)
 - [ ] 프로젝트 폴더 + README(v2 Hardened) + `.gitignore` 완료
 - [ ] Three.js 자체 호스팅 (`vendor/three.module.js`) 로컬 실행 확인
-- [ ] GitHub org `codingmola` 생성 + 첫 push
+- [ ] GitHub org `codingmola-games` 생성 + 첫 push
 - [ ] Cloudflare Pages 배포 성공 (퍼블릭 URL) + Spend Alert 설정
 - [ ] Privacy/Terms 초안 배포 (`/privacy`, `/terms`)
 - [ ] 도메인 결정 (codingmola.com 서브 / .games / pages.dev)

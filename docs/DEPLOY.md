@@ -4,8 +4,8 @@
 
 ## 옵션 A — GitHub 연결 (권장, 자동 배포)
 
-1. 새 GitHub **org** 생성 (name: `codingmola`) — 개인 계정 `HanjuJo` 직접 사용 금지 (익명성 규칙)
-2. 저장소 생성 (org: `codingmola`, name: `game-01`, public)
+1. 새 GitHub **org** 생성 (name: `codingmola-games` — `codingmola`는 선점됨) — 개인 계정 `HanjuJo` 직접 사용 금지 (익명성 규칙)
+2. 저장소 생성 (org: `codingmola-games`, name: `game-01`, public)
 3. 로컬에서 git 초기화 (첫 push 전 `.gitignore` 존재 확인!):
    ```bash
    cd ~/codingmola-games/game-01
@@ -15,7 +15,7 @@
    git status   # 시크릿/대용량 파일 없나 눈으로 한 번 더
    git commit -m "week 0: scaffold [AI]"
    git branch -M main
-   git remote add origin git@github.com:codingmola/game-01.git
+   git remote add origin git@github.com:codingmola-games/game-01.git
    git push -u origin main
    ```
 3. https://dash.cloudflare.com → **Workers & Pages → Create → Pages → Connect to Git**
@@ -44,7 +44,7 @@ python3 -m http.server 8000
 ## 체크리스트 (Week 0 완료 조건)
 
 - [ ] `.gitignore` 존재 확인 후 첫 push 완료
-- [ ] GitHub org = `codingmola` (실명 org 사용 X)
+- [ ] GitHub org = `codingmola-games` (실명 org 사용 X)
 - [ ] 퍼블릭 URL에서 `index.html` 열림
 - [ ] `vendor/three.module.js` 로컬 로딩 확인 (네트워크 탭에서 jsdelivr 호출 없음)
 - [ ] 모바일 사파리/크롬에서도 3D 씬 정상 렌더
