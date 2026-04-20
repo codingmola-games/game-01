@@ -82,6 +82,14 @@
   .btn:hover{background:rgba(255,255,255,.08);border-color:#fff;transform:translateY(-1px)}
   .btn.primary{background:#fff;color:#05050a;border-color:#fff}
   .btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+  .tip-link{
+    display:inline-block;margin-top:14px;padding:6px 14px;
+    font:500 13px/1 -apple-system,sans-serif;letter-spacing:.02em;
+    color:rgba(255,255,255,.55);text-decoration:none;
+    border-radius:999px;border:1px dashed rgba(255,255,255,.18);
+    transition:all .2s ease;
+  }
+  .tip-link:hover{color:#fff;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.04)}
 
   .offset{font:800 clamp(36px,7vw,84px)/1 "SF Mono",ui-monospace,monospace;
     letter-spacing:-.02em;margin:10px 0 18px;font-variant-numeric:tabular-nums}
@@ -245,6 +253,7 @@
     <button class="btn primary" id="againBtn">다시</button>
     <button class="btn" id="shareBtn">공유</button>
     <small id="endSeed">seed: —</small>
+    <a class="tip-link" href="https://qr.kakaopay.com/Ej8oq6aMZ" target="_blank" rel="noopener" aria-label="제작자에게 응원 보내기 (카카오페이)">☕ 재밌었다면 커피 한잔</a>
   </div>
 </div>
 
