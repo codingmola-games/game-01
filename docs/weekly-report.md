@@ -16,7 +16,7 @@
 - [ ] 도메인 결정 (codingmola.com 서브 / .games / pages.dev)
 - [x] GRAC 사전 상담 (051-720-6800) — B2C OK / 매장 경품 이벤트는 관계 법령 정밀 검토 필요 (회색지대). Week 1 내 공정위·변호사 추가 상담
 - [ ] 섭외 매장 Week 2 베타 스케줄 합의
-- [ ] Toss 송금 링크 + Buy Me a Coffee 가입 (Stripe 한국 미지원 → 2트랙 피벗, Week 1 D5 전)
+- [ ] Toss 송금 링크 생성 (Stripe 한국 미지원 → Toss 단독 런칭, Buy Me a Coffee는 Week 3+ 조건부)
 - [ ] Vibe Jam 2026 제출 완료 (2026-04-20, 조기 제출)
 
 ### 📊 KPI

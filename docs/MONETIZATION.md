@@ -36,23 +36,26 @@
 **DAU 게이트:** 없음
 **예상 월매출:** ₩0 ~ 30,000
 
-- ⚠️ **Stripe 한국 미지원 확인** (2026-04-20) → Toss + Buy Me a Coffee 2트랙으로 피벗
-- 국내 유저: **Toss 송금 링크** (`toss.me/codingmola` 형태). 사업자등록 無 OK, 수수료 無
-- 해외 유저 (Vibe Jam 트래픽): **Buy Me a Coffee** 페이지. PayPal 경유 USD 수령
-- 게임 오버 화면에 "☕ 응원하기 (₩3,000)" 버튼 → 브라우저 언어로 링크 분기
+- ⚠️ **Stripe 한국 미지원 확인** (2026-04-20) → Toss 중심으로 피벗
+- **Week 1 런칭:** **Toss 송금받기 링크** (`toss.me/codingmola`) 단독. 사업자등록 無, 수수료 0%
+- **Week 3+ 조건부 추가:** 해외 방문 ≥ 10% 확인 시 **Buy Me a Coffee + PayPal** 추가 검토
+- 게임 오버 화면에 "☕ 응원하기 (₩3,000)" 버튼 → Toss 링크 새창 오픈
 - DAU 게이트 없음. 1명만 눌러도 첫 매출 = 콘텐츠 소재
-- 파동 색/사운드 스킨: ₩1,000 IAP는 Week 6+ 및 경품 법률 자문 이후 재검토
+- 파동 색/사운드 스킨 ₩1,000 IAP는 Week 6+ 및 경품 법률 자문 이후 재검토
 
 **벤치마크:** Pieter Levels Photo AI ($3M/yr), 팁잔은 ko-fi / Buy Me a Coffee 모델 참고
 
 **계정 사전 준비 (Week 1 D5 전):**
-- **Toss**: 앱에서 송금받기 링크 즉시 생성 (5분, 개인 계정 필수)
-- **Buy Me a Coffee**: `buymeacoffee.com` 가입 + PayPal 연결 (한국 개인 PayPal OK)
-- 두 링크만 확보하면 코드 연동은 `index.html` href 한 줄 수정으로 완료
+- **Toss 앱**: 송금받기 링크 즉시 생성 (5분)
+- 코드 연동은 `index.html` href 한 줄이면 끝
 
-**수수료 현황:**
+**수수료:**
 - Toss 송금: 0% (개인송금)
-- Buy Me a Coffee: 플랫폼 5% + PayPal 국제 수수료·환전 10~15% → 실수령 약 80%
+- Buy Me a Coffee (Week 3+ 조건부): 플랫폼 5% + PayPal 수수료·환전 10~15% → 실수령 약 80%
+
+**Kill 조건 (Buy Me a Coffee 추가 여부 판단):**
+- Week 2 말 해외 IP 방문 < 10% → Buy Me a Coffee **영구 스킵**
+- 해외 방문 ≥ 10% AND 국내 팁잔 0건 → Buy Me a Coffee 추가
 
 ### 3. 연습모드 Adsterra 배너
 **시작:** Week 4
